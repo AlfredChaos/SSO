@@ -10,13 +10,14 @@ import (
 func main() {
 	listener, err := net.Listen("tcp", data.ServerIP)
 	if err != nil {
-		fmt.Println("listern error!")
+		fmt.Println("listern error!", err)
+		return
 	}
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("accept error!")
+			fmt.Println("accept error!", err)
 			continue
 		}
 		recvMessages(conn)
@@ -32,7 +33,7 @@ func recvMessages(conn net.Conn) {
 	for {
 		_, err := io.WriteString(conn, "")
 		if err != nil {
-			fmt.Println("server recevice message error!")
+			fmt.Println("server recevice message error!", err)
 		}
 	}
 }
