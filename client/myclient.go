@@ -1,7 +1,8 @@
-package main
+package client
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -9,11 +10,16 @@ import (
 )
 
 func main() {
-	conn, err := net.Dial("tcp", data.ServerIP)
+	clientSendMessages(data.ServerIP)
+}
+
+func clientSendMessages(ip string) {
+	conn, err := net.Dial("tcp", ip)
 	if err != nil {
 		fmt.Println("client dial server error!", err)
 		return
 	}
+	defer conn.Close()
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		line, err := reader.ReadString('\n')
@@ -21,13 +27,14 @@ func main() {
 			fmt.Println("client read data error!", err)
 			return
 		}
-		_, err = conn.Write([]byte(line))
+		rs, err := json.Marshal(line)
+		if err != nil {
+			fmt.Println("json Marshal error!")
+		}
+		_, _ = conn.Write(rs)
 		if err != nil {
 			fmt.Println("client wirte error!", err)
 		}
+
 	}
-}
-
-func clientSendMessages() {
-
 }

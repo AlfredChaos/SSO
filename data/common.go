@@ -29,7 +29,7 @@ type Session struct {
 
 var UserList []*User
 
-var LoginUserList []*User
+var LoginUserList map[string]*User
 
 var User1 *User = &User{
 	UserID:   1,
