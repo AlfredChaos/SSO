@@ -9,9 +9,10 @@ import (
 type test struct {
 }
 
-func print() int {
+func print(i int) {
 	fmt.Println("test ok")
-	return 1
+	fmt.Print(i)
+	//return 1
 }
 
 func main() {
@@ -23,8 +24,10 @@ func main() {
 		fmt.Println(k)
 		fmt.Println(v)
 	}*/
-	pv := register[1].Call(nil)
-	fmt.Println(pv[0])
+	params := make([]reflect.Value, 1)
+	params[0] = reflect.ValueOf(1)
+	register[1].Call(params)
+	//fmt.Println(pv[0])
 }
 
 func prints(i int) string {

@@ -1,5 +1,7 @@
 package data
 
+import "reflect"
+
 type Login struct {
 	Username string
 	Password string
@@ -29,7 +31,8 @@ type Session struct {
 
 var UserList []*User
 
-var LoginUserList map[string]*User
+var GlobalLoginUserList = make(map[string]*User)
+var SubSysLoginList = make(map[string]*User)
 
 var User1 *User = &User{
 	UserID:   1,
@@ -45,3 +48,6 @@ const (
 
 var ServerIP string = "127.0.0.1:9000"
 var SSOIP string = "127.0.0.1:9001"
+var ClientIP string = "127.0.0.1:9002"
+
+var RegisterMap = make(map[int]reflect.Value)
