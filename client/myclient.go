@@ -1,21 +1,23 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"net"
-	"os"
+	"reflect"
 	"sso/data"
 )
 
 func main() {
+	//初始化
+	clientInit()
+
 	accessServerRequest()
 
 	// start listen, accept info
-	/*listener, err := net.Listen("tcp", data.ServerIP)
+	listener, err := net.Listen("tcp", data.ClientIP)
 	if err != nil {
-		fmt.Println("listern error: ", err)
+		fmt.Println("listener error: ", err)
 		return
 	}
 
@@ -25,9 +27,13 @@ func main() {
 			fmt.Println("accept error: ", err)
 			continue
 		}
+		clientRecvMessages(conn)
+	}
 
-	}*/
+}
 
+func clientInit() {
+	data.Register()
 }
 
 func accessServerRequest() {
@@ -38,7 +44,7 @@ func accessServerRequest() {
 	}
 	defer conn.Close()
 
-	rs, err := json.Marshal(&data.Request{ReqID: 0, IPAddr: data.ClientIP, AccIP: data.ServerIP})
+	rs, err := json.Marshal(&data.Request{ReqID: 0, LocalIP: data.ClientIP, AccIP: data.ServerIP})
 	if err != nil {
 		fmt.Println("client access server error: ", err)
 		return
@@ -50,30 +56,21 @@ func accessServerRequest() {
 	}
 }
 
-// test code
-func clientSendMessages(ip string) {
-	conn, err := net.Dial("tcp", ip)
+func clientRecvMessages(conn net.Conn) {
+	defer conn.Close()
+	buf := make([]byte, 1024)
+	n, err := conn.Read(buf)
 	if err != nil {
-		fmt.Println("client dial server error!", err)
+		fmt.Println("server recev messages error: ", err)
 		return
 	}
-	defer conn.Close()
-
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println("client read data error!", err)
-			return
-		}
-		rs, err := json.Marshal(line)
-		if err != nil {
-			fmt.Println("json Marshal error!")
-		}
-		_, _ = conn.Write(rs)
-		if err != nil {
-			fmt.Println("client wirte error!", err)
-		}
-
+	notify := &data.Request{}
+	err = json.Unmarshal(buf[:n], notify)
+	if err != nil {
+		fmt.Println("sso json unmarshl request error: ", err)
+		return
 	}
+	params := make([]reflect.Value, 1)
+	params[0] = reflect.ValueOf(notify)
+	data.RegisterMap[notify.ReqID].Call(params)
 }

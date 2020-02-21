@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	data.Register()
+	//初始化
+	ssoInit()
 
 	//开始监听
 	listener, err := net.Listen("tcp", data.SSOIP)
@@ -28,8 +29,10 @@ func main() {
 	}
 }
 
-func ssoSendMessages() {
-
+func ssoInit() {
+	data.Register()
+	data.UserList[0] = data.User1
+	data.SSOCache = &data.Request{}
 }
 
 func ssoRecvMessages(conn net.Conn) {
@@ -40,7 +43,7 @@ func ssoRecvMessages(conn net.Conn) {
 		fmt.Println("server recev messages error: ", err)
 		return
 	}
-	notify := &data.NotifyRequest{}
+	notify := &data.Request{}
 	err = json.Unmarshal(buf[:n], notify)
 	if err != nil {
 		fmt.Println("sso json unmarshl request error: ", err)

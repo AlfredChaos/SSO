@@ -29,14 +29,14 @@ func main() {
 	}
 }
 
-func sendMessages(ip string) {
+/*func sendMessages(ip string) {
 	conn, err := net.Dial("tcp", ip)
 	if err != nil {
 		fmt.Println("client dial server error!", err)
 		return
 	}
 	defer conn.Close()
-}
+}*/
 
 func recvMessages(conn net.Conn) {
 	defer conn.Close()
